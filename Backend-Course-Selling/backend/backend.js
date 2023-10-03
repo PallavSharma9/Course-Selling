@@ -64,7 +64,7 @@ app.post('/admin/courses', authenticateJwt, (req,res)=>{
     const course = req.body;
     course.id = COURSES.length+1;
     COURSES.push(course);
-    fs.writeFileSync('course.json', JSON.stringify(COURSES));
+    fs.writeFileSync('courses.json', JSON.stringify(COURSES));
     res.json({message: 'Course updated successfully', courseId: course.id})
 
 })
@@ -73,7 +73,7 @@ app.put('/admin/courses/:courseId', (req,res)=>{
     const course = COURSES.find(c=> c.id === parseInt(req.params.courseId))
     if(course){
         Object.assign(course, req.body)
-        fs.writeFileSync('course.json', JSON.stringify(COURSES))
+        fs.writeFileSync('courses.json', JSON.stringify(COURSES))
         res.json({message: 'Course updated successfully'})
     }else{
         res.status(404).json({message: 'Course not found'})
