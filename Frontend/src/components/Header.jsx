@@ -1,65 +1,102 @@
-import { AppBar, Toolbar, Box, Typography, Button } from "@mui/material";
-import {useNavigate} from 'react-router-dom';
-import { useEffect, useState} from 'react';
+import { Typography, Button } from "@mui/material";
+import { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom"
+import axios from "axios";
 
+function Header() {
+    const navigate = useNavigate()
+    const [userEmail, setUserEmail] = useState(null)
 
-
-
-export default function Header(){
-    const navigate = useNavigate();
-    const handleLogin = () => navigate('/login')
-    const handleSignup = () => navigate('/signup')
-
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [username, setUsername] = useState('');
-
-    useEffect(()=>{
-        fetch('http://localhost:3000/admin/profile', 
-        {   method: "GET",
-            headers: { "Authorization": "Bearer "+ localStorage.getItem("token") 
-        }}).then(response => response.json())
-        .then(data=>{
-            console.log(data)
-            setUsername(data.username);
-            setLoggedIn(true);
-        })
-        .catch(error => {
-            console.log("Error fetching username:", error)
-            setLoggedIn(false);
-        })
-
-    }, []);
-
-    
-
-    const handleLogout = () =>{
-        //Perform logout logic here
-        localStorage.setItem("token", null);
-        setLoggedIn(false);
-        setUsername("");
-        // window.location = '/'
-    }
-
-    return (
-        <Box>
-            <AppBar postion="static">
-                <Toolbar>
-                    <Typography variant='h6' component='h6' sx={{flexGrow: 1}}>Coursera</Typography>
-                    {loggedIn ? (
-                        <>
-                            <Typography variant="subtitle1" component="span" sx={{marginRight: '1rem'}}>{username}</Typography>
-                            <Button color="inherit" onClick={handleLogout}>Logout</Button>
-                        </>
-                    ):(
-                        <>
-                            <Button color="inherit" onClick={handleLogin}>Login</Button>
-                            <Button color="inherit" onClick={handleSignup}>Signup</Button>
-                        </>
-                    )
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await axios.get("http://localhost:3001/admin/me", {
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
                 }
-                    
-                </Toolbar>
-            </AppBar>
-        </Box>
-    )
+            })
+
+            const data = res.data;
+            if(data.username) {
+                setUserEmail(data.username)
+            }
+        }
+        fetchData();
+    }, [])
+
+    if(userEmail) {
+        return <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: 4,
+            zIndex: 1,
+            backgroundColor: "skyblue"
+        }}>
+            <div style={{marginLeft: 10}}>
+                <Typography variant={"h6"}>Coursera</Typography>
+            </div>
+
+            <div style={{display: "flex"}}>
+                <div style={{marginRight: 10, display: "flex"}}>
+                    <div style={{marginRight: 10}}>
+                        <Button
+                            onClick={()=>{
+                                navigate("/addcourse")
+                            }}
+                        >Add course</Button>
+                    </div>   
+
+                    <div style={{marginRight: 10}}>
+                        <Button
+                            onClick={()=>{
+                                navigate("/courses")
+                            }}
+                        >Courses</Button>
+                    </div>
+
+                    <Button
+                        onClick={()=>{
+                            localStorage.setItem("token", null)
+                            window.location = "/"
+                        }}
+                        variant={"contained"}
+                    >Logout</Button>
+                </div>
+            </div>
+        </div>
+    } else{
+        return <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: 4,
+            zIndex: 1,
+            backgroundColor: "skyblue"
+        }}>
+            <div style={{marginLeft: 10}}>
+                <Typography variant={"h6"}>Coursera</Typography>
+            </div>
+
+            <div style={{display: "flex", marginRight: 10}}>
+                <div style={{marginRight: 10}}>
+                    <Button 
+                        variant={"contained"}
+                        onClick={()=>{
+                            navigate("/signup")
+                        }}
+                    >Signup</Button>
+                </div>
+                <div>
+                    <Button
+                        variant={"contained"}
+                        onClick={() => {
+                            navigate("/login")
+                        }}
+                    >Login</Button>
+                </div>
+            </div>
+        </div>
+    }
 }
+
+
+
+export default Header;

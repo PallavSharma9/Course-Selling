@@ -1,52 +1,53 @@
-import {useEffect, useState} from "react";
-import { Card, Grid, Box, CardContent, CardMedia, Typography} from "@mui/material"
+import { Button, Card, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom";
 
 function Courses() {
     const [courses, setCourses] = useState([]);
-
+    
     useEffect(() => {
-        fetch("http://localhost:3000/admin/courses", {
-            headers: { Authorization: "Bearer "+ localStorage.getItem("token")}
-        })
-        .then((response) => response.json)
-        .then((data) => setCourses(data.courses))
-    }, [])
+        function callback2(data) {
+            setCourses(data.courses);
+        }
+        function callback1(res) {
+            res.json().then(callback2)
+        }
+        fetch("http://localhost:3001/admin/courses/", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            }
+        }).then(callback1)
+    }, []);
 
-    return ( <>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-            <Box maxWidth={800}>
-                <Typography variant="h4" component="h4" align="center" gutterBottom> Courses </Typography>
-                <Grid container spcaing={2} justifyContent="center">
-                    {courses.map((course)=>(
-                        <Grid item xs={12} sm={6} md={4} key={course.title}>
-                        <Course course={course} />
-                        </Grid>
-                    ))}
-                </Grid>
-            </Box>
-        </Box>
-    </>)
+    return <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
+        {courses.map(course => {
+            return <Course course={course} />}
+        )}
+    </div>
+}
+
+export function Course({course}) {
+    const navigate = useNavigate();
+
+    return <Card style={{
+        margin: 10,
+        width: 300,
+        minHeight: 200,
+        padding: 20
+    }}>
+        <Typography textAlign={"center"} variant="h5">{course.title}</Typography>
+        <Typography textAlign={"center"} variant="subtitle1">{course.description}</Typography>
+        <img src={course.imageLink} style={{width: 300, height: 200}} ></img>
+        <div style={{display: "flex", justifyContent: "center", marginTop: 20}}>
+            <Button variant="contained" size="large" onClick={() => {
+                navigate("/course/" + course._id);
+            }}>Edit</Button>
+        </div>
+    </Card>
+
 }
 
 
-function Course({ course }) {
-    const { title, description, price, imageLink, published } = course;
-    
-    return (
-        <Card sx={{ maxWidth: 345 }}>
-            <CardMedia
-            sx={{ height: 140 }}
-            image={imageLink}
-            title={title}
-            />
-            <CardContent>
-                <Typography gutterBottom variant="h5" component="div"> {title} </Typography>
-                <Typography variant="body2" color="text.secondary"> {description} </Typography>
-                <Typography variant="body2" color="text.secondary"> Price: {price} </Typography>
-                <Typography variant="body2" color="text.secondary"> Published: {published ? "Yes" : "No"} </Typography>
-            </CardContent>
-        </Card>
-    );
-    }
-    
-    export default Courses;
+
+export default Courses;

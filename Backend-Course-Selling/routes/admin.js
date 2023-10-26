@@ -67,27 +67,27 @@ router.post('/signup', (req, res) => {
     res.json({ courses });
   });
   
-//   router.get('/course/:courseId', authenticateJwt, async (req, res) => {
-//     const courseId = req.params.courseId;
-//     const course = await Course.findById(courseId);
-//     res.json({ course });
-//   });
-
   router.get('/course/:courseId', authenticateJwt, async (req, res) => {
-    try {
-      const courseId = req.params.courseId;
-      const course = await Course.findById(courseId);
-      
-      if (!course) {
-        return res.status(404).json({ message: 'Course not found' });
-      }
-      
-      res.json({ course });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
+    const courseId = req.params.courseId;
+    const course = await Course.findById(courseId);
+    res.json({ course });
   });
+
+  // router.get('/course/:courseId', authenticateJwt, async (req, res) => {
+  //   try {
+  //     const courseId = req.params.courseId;
+  //     const course = await Course.findById(courseId);
+      
+  //     if (!course) {
+  //       return res.status(404).json({ message: 'Course not found' });
+  //     }
+      
+  //     res.json({ course });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ message: 'Internal server error' });
+  //   }
+  // });
   
 
   module.exports = router
