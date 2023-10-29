@@ -1,10 +1,12 @@
 import {Button, TextField, Card, Typography} from "@mui/material"
 import {useState} from "react"
 import axios from "axios"
+import {useNavigate} from "react-router-dom"
 
-function Login() {
+function Login({setUserEmail}) {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const navigate = useNavigate()
 
     return <div>
             <div style={{
@@ -46,7 +48,9 @@ function Login() {
                             })
                             const data = res.data
                             localStorage.setItem("token", data.token)
-                            window.location = "/"
+                            // window.location = "/"
+                            setUserEmail(email)
+                            navigate("/courses")
                         }}
                     >Login</Button>
                 </Card>

@@ -1,27 +1,9 @@
 import { Typography, Button } from "@mui/material";
-import { useEffect, useState } from "react";
 import {useNavigate} from "react-router-dom"
-import axios from "axios";
 
-function Header() {
+
+function Header({userEmail, setUserEmail}) {
     const navigate = useNavigate()
-    const [userEmail, setUserEmail] = useState(null)
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await axios.get("http://localhost:3001/admin/me", {
-                headers: {
-                    "Authorization": "Bearer " + localStorage.getItem("token")
-                }
-            })
-
-            const data = res.data;
-            if(data.username) {
-                setUserEmail(data.username)
-            }
-        }
-        fetchData();
-    }, [])
 
     if(userEmail) {
         return <div style={{
@@ -56,7 +38,8 @@ function Header() {
                     <Button
                         onClick={()=>{
                             localStorage.setItem("token", null)
-                            window.location = "/"
+                            setUserEmail(null)
+                            navigate("/")
                         }}
                         variant={"contained"}
                     >Logout</Button>
