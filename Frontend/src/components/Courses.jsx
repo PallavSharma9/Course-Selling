@@ -1,24 +1,23 @@
 import { Button, Card, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 function Courses() {
     const [courses, setCourses] = useState([]);
     
-    useEffect(() => {
-        function callback2(data) {
-            setCourses(data.courses);
-        }
-        function callback1(res) {
-            res.json().then(callback2)
-        }
-        fetch("http://localhost:3001/admin/courses/", {
-            method: "GET",
+    const init = async () => {
+        const response = await axios.get("http://localhost:3001/admin/courses", {
             headers: {
-                "Authorization": "Bearer " + localStorage.getItem("token")
+                Authorization: `Bearer ${localStorage.getItem('token')}`
             }
-        }).then(callback1)
-    }, []);
+        })
+        setCourses(response.data.courses)
+    }
+
+    useEffect(() => {
+        init()
+    }, [])
 
     return <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
         {courses.map(course => {

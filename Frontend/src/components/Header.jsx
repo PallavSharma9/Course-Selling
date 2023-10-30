@@ -1,9 +1,21 @@
 import { Typography, Button } from "@mui/material";
 import {useNavigate} from "react-router-dom"
+import { isUserLoading } from "../store/selectors/isUserLoading";
+import { userState } from "../store/atoms/user";
+import { userEmailState } from "../store/selectors/userEmail";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 
 
-function Header({userEmail, setUserEmail}) {
+
+function Header() {
     const navigate = useNavigate()
+    const userLoading = useRecoilValue(isUserLoading)
+    const userEmail = useRecoilValue(userEmailState)
+    const setUser = useSetRecoilState(userState)
+
+    if(userLoading) {
+        return <></>
+    }
 
     if(userEmail) {
         return <div style={{
@@ -11,9 +23,8 @@ function Header({userEmail, setUserEmail}) {
             justifyContent: "space-between",
             padding: 4,
             zIndex: 1,
-            backgroundColor: "skyblue"
         }}>
-            <div style={{marginLeft: 10}}>
+            <div style={{marginLeft: 10, cursor: "pointer"}} onClick={()=> navigate("/")}>
                 <Typography variant={"h6"}>Coursera</Typography>
             </div>
 
@@ -38,7 +49,10 @@ function Header({userEmail, setUserEmail}) {
                     <Button
                         onClick={()=>{
                             localStorage.setItem("token", null)
-                            setUserEmail(null)
+                            setUser({
+                                isLoading: false,
+                                userEmail: null
+                            })
                             navigate("/")
                         }}
                         variant={"contained"}
@@ -51,10 +65,9 @@ function Header({userEmail, setUserEmail}) {
             display: "flex",
             justifyContent: "space-between",
             padding: 4,
-            zIndex: 1,
-            backgroundColor: "skyblue"
+            zIndex: 1
         }}>
-            <div style={{marginLeft: 10}}>
+            <div style={{marginLeft: 10, cursor: "pointer"}} onClick={() => navigate('/')}>
                 <Typography variant={"h6"}>Coursera</Typography>
             </div>
 
